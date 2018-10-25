@@ -22,6 +22,7 @@ import (
 	"strings"
 
 	"github.com/coreos/go-oidc/jose"
+	"github.com/davecgh/go-spew/spew"
 	"go.uber.org/zap"
 )
 
@@ -42,6 +43,7 @@ func (r *oauthProxy) getIdentity(req *http.Request) (*userContext, error) {
 	if err != nil {
 		return nil, err
 	}
+	r.log.Debug("received token", zap.String("token", spew.Sdump(token)))
 	user, err := extractIdentity(token)
 	if err != nil {
 		return nil, err
@@ -52,7 +54,9 @@ func (r *oauthProxy) getIdentity(req *http.Request) (*userContext, error) {
 		zap.String("id", user.id),
 		zap.String("name", user.name),
 		zap.String("email", user.email),
-		zap.String("roles", strings.Join(user.roles, ",")))
+		zap.String("roles", strings.Join(user.roles, ",")),
+		zap.String("groups", strings.Join(user.groups, ",")),
+	)
 
 	return user, nil
 }

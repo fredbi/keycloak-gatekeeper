@@ -40,30 +40,31 @@ static: golang deps
 	@mkdir -p bin
 	CGO_ENABLED=0 GOOS=linux go build -a -tags netgo -ldflags "-w ${LFLAGS}" -o bin/${NAME}
 
-docker-build:
-	@echo "--> Compiling the project"
-	docker run --rm \
-		-v ${ROOT_DIR}:/go/src/github.com/${AUTHOR}/${NAME} \
-		-w /go/src/github.com/${AUTHOR}/${NAME} \
-		-e GOOS=linux golang:${GOVERSION} \
-		make static
-
-docker-test:
-	@echo "--> Running the docker test"
-	docker run --rm -ti -p 3000:3000 \
-    -v ${ROOT_DIR}/config.yml:/etc/keycloak/config.yml:ro \
-    -v ${ROOT_DIR}/tests:/opt/tests:ro \
-    ${REGISTRY}/${AUTHOR}/${NAME}:${VERSION} --config /etc/keycloak/config.yml
-
-docker-release:
-	@echo "--> Building a release image"
-	@$(MAKE) static
-	@$(MAKE) docker
-	@docker push ${REGISTRY}/${AUTHOR}/${NAME}:${VERSION}
+#docker-build:
+#	@echo "--> Compiling the project"
+#	docker run --rm \
+#		-v ${ROOT_DIR}:/go/src/github.com/${AUTHOR}/${NAME} \
+#		-w /go/src/github.com/${AUTHOR}/${NAME} \
+#		-e GOOS=linux golang:${GOVERSION} \
+#		make static
+#
+#docker-test:
+#	@echo "--> Running the docker test"
+#	docker run --rm -ti -p 3000:3000 \
+#    -v ${ROOT_DIR}/config.yml:/etc/keycloak/config.yml:ro \
+#    -v ${ROOT_DIR}/tests:/opt/tests:ro \
+#    ${REGISTRY}/${AUTHOR}/${NAME}:${VERSION} --config /etc/keycloak/config.yml
+#
+#docker-release:
+#	@echo "--> Building a release image"
+#	@$(MAKE) static
+#	@$(MAKE) docker
+#	@docker push ${REGISTRY}/${AUTHOR}/${NAME}:${VERSION}
 
 docker:
 	@echo "--> Building the docker image"
-	docker build -t ${REGISTRY}/${AUTHOR}/${NAME}:${VERSION} .
+	#docker build -t ${REGISTRY}/${AUTHOR}/${NAME}:${VERSION} .
+	docker build -t fredbi/keycloak-gatekeeper:latest .
 
 certs:
 	@echo "--> Generating the root CA"

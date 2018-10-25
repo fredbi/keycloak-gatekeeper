@@ -22,11 +22,13 @@ import (
 
 	"github.com/coreos/go-oidc/jose"
 	"github.com/coreos/go-oidc/oidc"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // extractIdentity parse the jwt token and extracts the various elements is order to construct
 func extractIdentity(token jose.JWT) (*userContext, error) {
 	claims, err := token.Claims()
+	spew.Dump(claims)
 	if err != nil {
 		return nil, err
 	}

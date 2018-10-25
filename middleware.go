@@ -308,19 +308,20 @@ func (r *oauthProxy) admissionMiddleware(resource *Resource) func(http.Handler) 
 					zap.String("access", "denied"),
 					zap.String("email", user.email),
 					zap.String("resource", resource.URL),
-					zap.String("roles", resource.getRoles()))
+					zap.String("available roles", strings.Join(user.roles, ",")),
+					zap.String("required roles", resource.getRoles()))
 
 				next.ServeHTTP(w, req.WithContext(r.accessForbidden(w, req)))
 				return
 			}
-
 			// @step: check if we have any groups, the groups are there
 			if !hasAccess(resource.Groups, user.groups, false) {
-				r.log.Warn("access denied, invalid roles",
+				r.log.Warn("access denied, invalid groups",
 					zap.String("access", "denied"),
 					zap.String("email", user.email),
 					zap.String("resource", resource.URL),
-					zap.String("groups", strings.Join(resource.Groups, ",")))
+					zap.String("available groups", strings.Join(user.groups, ",")),
+					zap.String("required groups", strings.Join(resource.Groups, ",")))
 
 				next.ServeHTTP(w, req.WithContext(r.accessForbidden(w, req)))
 				return
