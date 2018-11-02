@@ -22,7 +22,7 @@ import (
 	"strings"
 
 	"github.com/coreos/go-oidc/jose"
-	"github.com/davecgh/go-spew/spew"
+	//"github.com/davecgh/go-spew/spew"
 	"go.uber.org/zap"
 )
 
@@ -43,7 +43,7 @@ func (r *oauthProxy) getIdentity(req *http.Request) (*userContext, error) {
 	if err != nil {
 		return nil, err
 	}
-	r.log.Debug("received token", zap.String("token", spew.Sdump(token)))
+	//r.log.Debug("received token", zap.String("token", spew.Sdump(token)))
 	user, err := extractIdentity(token)
 	if err != nil {
 		return nil, err
