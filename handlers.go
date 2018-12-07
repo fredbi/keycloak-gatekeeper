@@ -401,6 +401,8 @@ func (r *oauthProxy) logoutHandler(w http.ResponseWriter, req *http.Request) {
 	if redirectURL != "" {
 		r.redirectToURL(redirectURL, w, req, http.StatusTemporaryRedirect)
 	}
+
+	r.log.Info("default logout response")
 }
 
 // expirationHandler checks if the token has expired

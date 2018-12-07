@@ -184,6 +184,7 @@ func (r *oauthProxy) createReverseProxy() error {
 			AllowCredentials: r.config.CorsCredentials,
 			ExposedHeaders:   r.config.CorsExposedHeaders,
 			MaxAge:           int(r.config.CorsMaxAge.Seconds()),
+			Debug:            r.config.CorsDebug,
 		})
 		engine.Use(c.Handler)
 	}
