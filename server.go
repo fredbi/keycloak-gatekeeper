@@ -176,6 +176,13 @@ func (r *oauthProxy) createReverseProxy() error {
 		engine.Use(r.securityMiddleware)
 	}
 
+	engine.Use(r.proxyMiddleware)
+	r.router = engine
+
+	if len(r.config.ResponseHeaders) > 0 {
+		engine.Use(r.responseHeaderMiddleware(r.config.ResponseHeaders))
+	}
+
 	if len(r.config.CorsOrigins) > 0 {
 		c := cors.New(cors.Options{
 			AllowedOrigins:   r.config.CorsOrigins,
@@ -187,13 +194,6 @@ func (r *oauthProxy) createReverseProxy() error {
 			Debug:            r.config.CorsDebug,
 		})
 		engine.Use(c.Handler)
-	}
-
-	engine.Use(r.proxyMiddleware)
-	r.router = engine
-
-	if len(r.config.ResponseHeaders) > 0 {
-		engine.Use(r.responseHeaderMiddleware(r.config.ResponseHeaders))
 	}
 
 	// step: add the routing for oauth
