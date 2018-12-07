@@ -32,11 +32,13 @@ func (r *oauthProxy) proxyMiddleware(next http.Handler) http.Handler {
 		r.log.Debug("before proxy response = ", zap.String("headers", fmt.Sprintf("%#v", w.Header())))
 		next.ServeHTTP(w, req)
 		r.log.Debug("start of proxy response = ", zap.String("headers", fmt.Sprintf("%#v", w.Header())))
+		var respHeaders http.Header
 		if len(r.config.CorsOrigins) > 0 {
-			respHeaders := make(http.Header, len(w.Header()))
-			for h, v := range w.Header() {
-				if strings.HasPrefix(h, "Access-Control-") {
-					respHeaders[h] = v
+			// preserve CORS headers
+			respHeaders = make(http.Header, len(w.Header()))
+			for h := range w.Header() {
+				if strings.HasPrefix(w.Header().Get(h), "Access-Control-") {
+					respHeaders.Add(h, w.Header().Get(h))
 				}
 			}
 		}
@@ -84,6 +86,9 @@ func (r *oauthProxy) proxyMiddleware(next http.Handler) http.Handler {
 		r.log.Debug("proxy response = ", zap.String("headers", fmt.Sprintf("%#v", w.Header())))
 
 		// copy any CORS headers
+		for h := range respHeaders {
+			w.Header().Add(h, respHeaders.Get(h))
+		}
 	})
 }
 
