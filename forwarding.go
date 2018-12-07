@@ -18,7 +18,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/coreos/go-oidc/jose"
@@ -32,16 +31,19 @@ func (r *oauthProxy) proxyMiddleware(next http.Handler) http.Handler {
 		r.log.Debug("before proxy response = ", zap.String("headers", fmt.Sprintf("%#v", w.Header())))
 		next.ServeHTTP(w, req)
 		r.log.Debug("start of proxy response = ", zap.String("headers", fmt.Sprintf("%#v", w.Header())))
-		var respHeaders http.Header
-		if len(r.config.CorsOrigins) > 0 {
-			// preserve CORS headers
-			respHeaders = make(http.Header, len(w.Header()))
-			for h := range w.Header() {
-				if strings.HasPrefix(w.Header().Get(h), "Access-Control-") {
-					respHeaders.Add(h, w.Header().Get(h))
+		/*
+			var respHeaders http.Header
+			if len(r.config.CorsOrigins) > 0 {
+				// preserve CORS headers
+				respHeaders = make(http.Header, len(w.Header()))
+				for h := range w.Header() {
+					r.log.Debug("found header = ", zap.String(h, w.Header().Get(h)))
+					if strings.HasPrefix(h, "Access-Control-") {
+						respHeaders.Add(h, w.Header().Get(h))
+					}
 				}
 			}
-		}
+		*/
 
 		// @step: retrieve the request scope
 		scope := req.Context().Value(contextScopeName)
@@ -86,9 +88,10 @@ func (r *oauthProxy) proxyMiddleware(next http.Handler) http.Handler {
 		r.log.Debug("proxy response = ", zap.String("headers", fmt.Sprintf("%#v", w.Header())))
 
 		// copy any CORS headers
-		for h := range respHeaders {
-			w.Header().Add(h, respHeaders.Get(h))
-		}
+		//for h := range respHeaders {
+		//	w.Header().Add(h, respHeaders.Get(h))
+		//}
+		//r.log.Debug("proxy after response = ", zap.String("headers", fmt.Sprintf("%#v", w.Header())))
 	})
 }
 
