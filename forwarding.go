@@ -28,7 +28,9 @@ import (
 // proxyMiddleware is responsible for handles reverse proxy request to the upstream endpoint
 func (r *oauthProxy) proxyMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		r.log.Debug("before proxy response = ", zap.String("headers", fmt.Sprintf("%#v", w.Header())))
 		next.ServeHTTP(w, req)
+		r.log.Debug("start of proxy response = ", zap.String("headers", fmt.Sprintf("%#v", w.Header())))
 
 		// @step: retrieve the request scope
 		scope := req.Context().Value(contextScopeName)
@@ -70,6 +72,7 @@ func (r *oauthProxy) proxyMiddleware(next http.Handler) http.Handler {
 		}
 
 		r.upstream.ServeHTTP(w, req)
+		r.log.Debug("proxy response = ", zap.String("headers", fmt.Sprintf("%#v", w.Header())))
 	})
 }
 
