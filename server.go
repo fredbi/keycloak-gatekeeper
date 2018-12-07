@@ -193,6 +193,7 @@ func (r *oauthProxy) createReverseProxy() error {
 			MaxAge:           int(r.config.CorsMaxAge.Seconds()),
 			Debug:            r.config.CorsDebug,
 		})
+		r.log.Info("enabling CORS")
 		engine.Use(c.Handler)
 	}
 
